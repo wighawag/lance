@@ -3,20 +3,13 @@
 const assert = require('chai').assert;
 const incheon = require('../../');
 const testGameServer = require('./testGame/server');
-const testGameClient = require('./testGame/client');
+const phantom = require('phantom');
+const NUM_CLIENTS = 5;
 
 let state = {
     server: null,
-    clients: [],
-    numClients: 0
+    clients: []
 };
-
-// set all clients in a certain direction
-function setDirection(direction, value) {
-    state.clients.forEach(c => {
-        c.clientEngine.pressedKeys[direction] = value;
-    });
-}
 
 describe('multiplayer-game', function() {
 
@@ -31,27 +24,26 @@ describe('multiplayer-game', function() {
     it('start five clients', function(done) {
         this.timeout(10000);
         let promises = [];
-        while (state.numClients < 1) {
-            let c = state.clients[state.numClients++] = testGameClient.start();
-            assert.instanceOf(c.gameEngine, incheon.GameEngine);
-            assert.instanceOf(c.clientEngine, incheon.ClientEngine);
-            assert.instanceOf(c.physicsEngine, incheon.physics.PhysicsEngine);
-            promises.push(c.promise);
+        for (let c=0; c<NUM_CLIENTS; c++) {
+            let clientDesc = {};
+            let p = phantom.create([], {})
+                .then(instance => {
+                    console.log(`started phatom instance ${c}`)
+                    clientDesc.instance = instance;
+                    return instance.createPage();
+                })
+                .then(page => {
+                    clientDesc.page = page;
+                    return page.open('http://127.0.0.1:3000/');
+                })
+                .catch(error => {
+                    console.log(error);
+                    done('phantom error');
+                });
+            state.clients[c] = clientDesc;
+            promises.push(p);
         }
         Promise.all(promises).then(() => {done();});
-    });
-
-    it('everybody go up, everybody go down', function(done) {
-        this.timeout(10000);
-        setDirection('up', true);
-        setTimeout(() => {
-            setDirection('up', false);
-            setDirection('down', true);
-            setTimeout(() => {
-                setDirection('down', false);
-                done();
-            }, 4000);
-        }, 4000);
     });
 
 });

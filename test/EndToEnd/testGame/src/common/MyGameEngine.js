@@ -5,14 +5,10 @@ const PlayerAvatar = require('./PlayerAvatar');
 
 class MyGameEngine extends GameEngine {
 
-    constructor(options) {
-        super(options);
-        this.players = {};
-    }
-
     start() {
 
         super.start();
+        this.players = {};
 
         this.worldSettings = {
             width: 400,
