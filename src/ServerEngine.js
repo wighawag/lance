@@ -169,15 +169,13 @@ class ServerEngine {
     onPlayerConnected(socket) {
         var that = this;
 
-        console.log('Client connected');
-
         // save player
         this.connectedPlayers[socket.id] = socket;
         let playerId = socket.playerId = ++this.gameEngine.world.playerCount;
         socket.lastHandledInput = null;
         this.resetIdleTimeout(socket);
 
-        console.log("Client Connected", socket.id);
+        console.log(`Client Connected ${socket.id} playerId ${playerId}`);
 
         this.gameEngine.emit('server__playerJoined', {
             playerId: playerId

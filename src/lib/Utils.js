@@ -27,6 +27,14 @@ class Utils {
             return hash;
     }
 
+    static bufferToArrayBuffer(buf) {
+        var ab = new ArrayBuffer(buf.length);
+        var view = new Uint8Array(ab);
+        for (var i = 0; i < buf.length; ++i) {
+            view[i] = buf[i];
+        }
+        return ab;
+    }
 
     //return an array of objects according to key, value, or key and value matching
     //from http://techslides.com/how-to-parse-and-search-json-in-javascript

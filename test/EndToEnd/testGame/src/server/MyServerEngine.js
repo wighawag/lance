@@ -15,6 +15,7 @@ class MyServerEngine extends ServerEngine {
 
     onPlayerConnected(socket) {
         super.onPlayerConnected(socket);
+        this.gameEngine.addPlayer(socket.playerId);
     }
 
     onPlayerDisconnected(socketId, playerId) {

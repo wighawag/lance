@@ -29,16 +29,19 @@ describe('multiplayer-game', function() {
     });
 
     it('start five clients', function(done) {
-        while (state.numClients < 5) {
+        this.timeout(10000);
+        let promises = [];
+        while (state.numClients < 1) {
             let c = state.clients[state.numClients++] = testGameClient.start();
             assert.instanceOf(c.gameEngine, incheon.GameEngine);
             assert.instanceOf(c.clientEngine, incheon.ClientEngine);
             assert.instanceOf(c.physicsEngine, incheon.physics.PhysicsEngine);
+            promises.push(c.promise);
         }
-        done();
+        Promise.all(promises).then(() => {done();});
     });
 
-    it('everybody go up', function(done) {
+    it('everybody go up, everybody go down', function(done) {
         this.timeout(10000);
         setDirection('up', true);
         setTimeout(() => {

@@ -1,11 +1,13 @@
 'use strict';
 const incheon = require('../../../../../');
 const GameEngine = incheon.GameEngine;
+const PlayerAvatar = require('./PlayerAvatar');
 
 class MyGameEngine extends GameEngine {
 
     constructor(options) {
         super(options);
+        this.players = {};
     }
 
     start() {
@@ -16,6 +18,12 @@ class MyGameEngine extends GameEngine {
             width: 400,
             height: 400
         };
+    }
+
+    addPlayer(playerId) {
+        let p = this.players[playerId] = new PlayerAvatar(++this.world.idCount, 10 * playerId, 0);
+        this.addObjectToWorld(p);
+        console.log(`added player ${p.toString()}`);
     }
 
     processInput(inputData, playerId) {

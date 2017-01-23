@@ -20,17 +20,23 @@ const defaults = {
         bendingIncrements: 6
     }
 };
-let options = Object.assign(defaults, qsOptions);
+const testDefaults = {
+    traceLevel: 0,
+    serverURL: 'http://127.0.0.1:3000',
+    autoConnect: false
+};
+let options = Object.assign(defaults, testDefaults, qsOptions);
 
 // create a client engine and a game engine
 const physicsEngine = new SimplePhysicsEngine();
-const gameOptions = Object.assign({ physicsEngine, traceLevel: 0 }, options);
+const gameOptions = Object.assign({ physicsEngine }, options);
 const gameEngine = new MyGameEngine(gameOptions);
 const clientEngine = new MyClientEngine(gameEngine, options);
 
 function start() {
     clientEngine.start();
-    return { clientEngine, gameEngine, gameOptions, physicsEngine };
+    let promise = clientEngine.connect();
+    return { clientEngine, gameEngine, gameOptions, physicsEngine, promise };
 }
 
 // in a browser environment we auto-start

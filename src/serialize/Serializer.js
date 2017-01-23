@@ -35,33 +35,34 @@ class Serializer {
      * @param {Function} classObj reference to the class (not an instance!)
      * @param [classId] Unit specifying a class ID
      */
-    registerClass(classObj, classId){
-        //if no classId is specified, hash one from the class name
+    registerClass(classObj, classId) {
+        // if no classId is specified, hash one from the class name
         classId = classId ? classId : Utils.hashStr(classObj.name);
-        if (this.registeredClasses[classId]){
+        if (this.registeredClasses[classId]) {
             console.error(`Serializer: accidental override of classId ${classId} when registering class`,classObj);
         }
 
         this.registeredClasses[classId] = classObj;
-    };
+    }
 
-
-    deserialize(dataBuffer, byteOffset){
+    deserialize(dataBuffer, byteOffset) {
         byteOffset = byteOffset ? byteOffset : 0;
         let localByteOffset = 0;
 
+        if (!(dataBuffer instanceof ArrayBuffer)) {
+            dataBuffer = Utils.bufferToArrayBuffer(dataBuffer);
+        }
         let dataView = new DataView(dataBuffer);
 
         let objectClassId = dataView.getUint8(byteOffset + localByteOffset);
 
-        //todo if classId is 0 - take care of dynamic serialization.
+        // todo if classId is 0 - take care of dynamic serialization.
         let objectClass = this.registeredClasses[objectClassId];
-        if (objectClass == null){
+        if (objectClass == null ){
             console.error(`Serializer: unable to find class with objectClassId ${objectClassId}`);
         }
 
-        localByteOffset += Uint8Array.BYTES_PER_ELEMENT; //advance the byteOffset after the classId
-
+        localByteOffset += Uint8Array.BYTES_PER_ELEMENT; // advance the byteOffset after the classId
 
         let obj = new objectClass();
         for (let property of Object.keys(objectClass.netScheme).sort()) {
@@ -70,32 +71,32 @@ class Serializer {
             localByteOffset += read.bufferSize;
         }
 
-        return {obj, byteOffset: localByteOffset};
-    };
+        return { obj, byteOffset: localByteOffset };
+    }
 
-    writeDataView(dataView, value, bufferOffset, netSchemProp){
-        if (netSchemProp.type == Serializer.TYPES.FLOAT32){
+    writeDataView(dataView, value, bufferOffset, netSchemProp) {
+        if (netSchemProp.type == Serializer.TYPES.FLOAT32) {
             dataView.setFloat32(bufferOffset, value);
         }
-        else if (netSchemProp.type == Serializer.TYPES.INT32){
+        else if (netSchemProp.type == Serializer.TYPES.INT32) {
             dataView.setInt32(bufferOffset, value);
         }
-        else if (netSchemProp.type == Serializer.TYPES.INT16){
+        else if (netSchemProp.type == Serializer.TYPES.INT16) {
             dataView.setInt16(bufferOffset, value);
         }
-        else if (netSchemProp.type == Serializer.TYPES.INT8){
+        else if (netSchemProp.type == Serializer.TYPES.INT8) {
             dataView.setInt8(bufferOffset, value);
         }
-        else if (netSchemProp.type == Serializer.TYPES.UINT8){
+        else if (netSchemProp.type == Serializer.TYPES.UINT8) {
             dataView.setUint8(bufferOffset, value);
         }
-        else if (netSchemProp.type == Serializer.TYPES.CLASSINSTANCE){
+        else if (netSchemProp.type == Serializer.TYPES.CLASSINSTANCE) {
             value.serialize(this, {
                 dataBuffer: dataView.buffer,
                 bufferOffset: bufferOffset
             });
         }
-        else if (netSchemProp.type == Serializer.TYPES.LIST){
+        else if (netSchemProp.type == Serializer.TYPES.LIST) {
             let localBufferOffset = 0;
 
             //a list is comprised of the number of items followed by the items
@@ -116,21 +117,19 @@ class Serializer {
                     localBufferOffset += this.getTypeByteSize(netSchemProp.itemType);
                 }
 
-
-
             }
         }
-        //this is a custom data property which needs to define its own write method
-        else if(this.customTypes[netSchemProp.type] != null){
+        // this is a custom data property which needs to define its own write method
+        else if (this.customTypes[netSchemProp.type] != null) {
             this.customTypes[netSchemProp.type].writeDataView(dataView, value, bufferOffset);
         }
-        else{
+        else {
             console.error(`No custom property ${netSchemProp.type} found!`)
         }
 
     }
 
-    readDataView(dataView, bufferOffset, netSchemProp){
+    readDataView(dataView, bufferOffset, netSchemProp) {
         let data, bufferSize;
 
         if (netSchemProp.type == Serializer.TYPES.FLOAT32){

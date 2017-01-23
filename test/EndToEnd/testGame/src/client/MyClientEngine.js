@@ -48,6 +48,10 @@ class MyClientEngine extends ClientEngine {
         }
     }
 
+    connect() {
+        return super.connect();
+    }
+
 }
 
 module.exports = MyClientEngine;

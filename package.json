@@ -11,6 +11,10 @@
   "main": "main.js",
   "author": "Opher Vishnia",
   "license": "Apache-2.0",
+  "repository": {
+      "type" : "git",
+      "url" : "https://github.com/OpherV/Incheon"
+  },
   "bugs": {
     "url": "https://github.com/OpherV/incheon/issues"
   },
