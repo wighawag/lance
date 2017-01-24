@@ -29168,7 +29168,8 @@ class ClientEngine {
             autoConnect: true,
             healthCheckInterval: 1000,
             healthCheckRTTSample: 10,
-            stepPeriod: 1000 / GAME_UPS
+            stepPeriod: 1000 / GAME_UPS,
+            socket: {}
         }, inputOptions);
 
         /**
@@ -29243,7 +29244,8 @@ class ClientEngine {
      */
     connect() {
         let connectionPromise = new Promise((resolve, reject) => {
-            this.socket = io(this.options.serverURL);
+
+            this.socket = io(this.options.serverURL, this.options.socket);
 
             this.networkMonitor.registerClient(this);
 
@@ -33367,7 +33369,8 @@ const defaults = {
 const testDefaults = {
     traceLevel: 0,
     serverURL: 'http://127.0.0.1:3000',
-    autoConnect: false
+    autoConnect: false,
+    socket: { multiplex: false, forceNew: true }
 };
 let options = Object.assign(defaults, testDefaults, qsOptions);
 

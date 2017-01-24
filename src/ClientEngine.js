@@ -39,7 +39,8 @@ class ClientEngine {
             autoConnect: true,
             healthCheckInterval: 1000,
             healthCheckRTTSample: 10,
-            stepPeriod: 1000 / GAME_UPS
+            stepPeriod: 1000 / GAME_UPS,
+            socket: {}
         }, inputOptions);
 
         /**
@@ -114,7 +115,8 @@ class ClientEngine {
      */
     connect() {
         let connectionPromise = new Promise((resolve, reject) => {
-            this.socket = io(this.options.serverURL);
+
+            this.socket = io(this.options.serverURL, this.options.socket);
 
             this.networkMonitor.registerClient(this);
 

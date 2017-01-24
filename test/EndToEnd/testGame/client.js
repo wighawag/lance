@@ -23,7 +23,8 @@ const defaults = {
 const testDefaults = {
     traceLevel: 0,
     serverURL: 'http://127.0.0.1:3000',
-    autoConnect: false
+    autoConnect: false,
+    socket: { multiplex: false, forceNew: true }
 };
 let options = Object.assign(defaults, testDefaults, qsOptions);
 

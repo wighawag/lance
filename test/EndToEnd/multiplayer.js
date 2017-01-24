@@ -4,10 +4,11 @@ const assert = require('chai').assert;
 const incheon = require('../../');
 const testGameServer = require('./testGame/server');
 const phantom = require('phantom');
-const NUM_CLIENTS = 5;
+const NUM_CLIENTS = 4;
 
 let state = {
     server: null,
+    clientPromises: [],
     clients: []
 };
 
@@ -38,27 +39,29 @@ describe('multiplayer-game', function() {
                 clientDesc.status = status;
                 return clientDesc.page.property('content');
             })
-            .catch(error => {
-                console.log(error);
-                done('phantom error');
+            .then(content => {
+                clientDesc.content = content;
+                return Promise.resolve(content);
             });
         state.clients[c] = clientDesc;
         return p;
     }
 
     it('start five clients', function(done) {
-        this.timeout(10000);
+        this.timeout(20000);
         let promises = [];
         for (let c=0; c<NUM_CLIENTS; c++) {
-            promises.push(startClient(c));
+            state.clientPromises.push(startClient(c));
         }
-        Promise.all(promises).then(() => {done();});
+        Promise.all(state.clientPromises)
+            .then(() => {done();})
+            .catch(error => { console.log(error); done(error) });
     });
 
     it('show client state', function(done) {
+        this.timeout(20000);
         state.clients.forEach((c) => {
             console.log(`client ${c.id} status ${c.status} content ${c.content}`);
         });
-        done();
     });
 });
