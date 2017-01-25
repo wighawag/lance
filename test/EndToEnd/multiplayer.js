@@ -26,13 +26,19 @@ describe('multiplayer-game', function() {
         let clientDesc = {};
         let p = phantom.create([], {})
             .then(instance => {
-                console.log(`started phatom instance ${c}`)
+                console.log(`started phatom instance ${c}`);
                 clientDesc.instance = instance;
                 clientDesc.id = c;
                 return instance.createPage();
             })
             .then(page => {
                 clientDesc.page = page;
+                page.property('onConsoleMessage', function(m) {
+                    console.log('message: ', m);
+                });
+                page.property('onResourceError', function(m) {
+                    console.log('resource error: ', m);
+                });
                 return page.open('http://127.0.0.1:3000/');
             })
             .then(status => {
@@ -41,21 +47,20 @@ describe('multiplayer-game', function() {
             })
             .then(content => {
                 clientDesc.content = content;
-                return Promise.resolve(content);
+                return Promise.resolve();
             });
         state.clients[c] = clientDesc;
         return p;
     }
 
-    it('start five clients', function(done) {
+    it('start clients', function(done) {
         this.timeout(20000);
-        let promises = [];
-        for (let c=0; c<NUM_CLIENTS; c++) {
+        for (let c = 0; c < NUM_CLIENTS; c++) {
             state.clientPromises.push(startClient(c));
         }
         Promise.all(state.clientPromises)
             .then(() => {done();})
-            .catch(error => { console.log(error); done(error) });
+            .catch(error => { console.log(error); done(error); });
     });
 
     it('show client state', function(done) {
@@ -63,5 +68,6 @@ describe('multiplayer-game', function() {
         state.clients.forEach((c) => {
             console.log(`client ${c.id} status ${c.status} content ${c.content}`);
         });
+        done();
     });
 });
