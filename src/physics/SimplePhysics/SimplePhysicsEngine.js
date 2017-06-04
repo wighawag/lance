@@ -78,7 +78,7 @@ class SimplePhysicsEngine extends PhysicsEngine {
     }
 
     // entry point for a single step of the Simple Physics
-    step(objectFilter) {
+    step(isReenact, objectFilter) {
 
         // each object should advance
         let objects = this.gameEngine.world.objects;

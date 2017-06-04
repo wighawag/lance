@@ -326,7 +326,7 @@ class GameEngine {
 
         // physics step
         if (this.physicsEngine)
-            this.physicsEngine.step(objectFilter);
+            this.physicsEngine.step(isReenact, objectFilter);
 
         // for each object
         // - apply incremental bending

@@ -12,9 +12,10 @@ class PhysicsEngine {
     /**
      * A single Physics step.
      *
+     * @param {Boolean} isReenact - is this step a re-enactment of the past.
      * @param {Function} objectFilter - a test function which filters which objects should move
      */
-    step(objectFilter) {}
+    step(isReenact, objectFilter) {}
 
 }
 

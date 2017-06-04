@@ -20,7 +20,7 @@ class CannonPhysicsEngine extends PhysicsEngine {
     }
 
     // entry point for a single step of the Simple Physics
-    step(objectFilter) {
+    step(isReenact, objectFilter) {
         this.world.step(this.options.dt);
     }
 
